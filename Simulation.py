@@ -1,8 +1,8 @@
-from Parameters import *
-from ModelData import *
-from dbTools import *
-from Model import *
-from View import *
+from Model.Parameters import *
+from Model.System import *
+from DataTools.ModelData import *
+from DataTools.dbTools import *
+from DataTools.View import *
 from numpy.random import rand
 import numpy as np
 import csv
