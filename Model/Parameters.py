@@ -1,5 +1,7 @@
+import numpy as np
+
 #_____Time_____
-tmax = 1440 #minutes
+tmax = 720 #minutes
 dt = 0.1
 steps = int(tmax/dt)
 
@@ -7,16 +9,22 @@ steps = int(tmax/dt)
 cells = 1
 
 #_____TMG_____
-tmg = 40
-tmg_range = 1
+tmg = 20
+tmg_range = 40
 
 #_____STATE_____
+# Choose Algorithm Initial State
 STATE = 'off'
 P_on = 1
 P_off = 0
 
 #_____Algorithm_____
-algorithm = 'gillespie'
+#   You can choose between: 
+#     - Euler: euler
+#     - Poisson: poisson, poisson_delta_tmg
+#     - Gillespie: gillespie, gillespie_full_noise, gillespie_delta_tmg
+
+algorithm = 'gillespie_full_noise'
 
 #_____Parameters_____
 gamma = 0.0231
@@ -31,4 +39,9 @@ n = 2
 q = 0
 p = 167
 landa = 1.5
-#landa = 0.015
+
+#_____Extra_____
+
+sampling_time = 0.1
+c_assoc = 0.00001               # Association Constant. 0.00001 Associations/s
+c_diss = 0.005                   # Complex Degradation Constant 0.005/s

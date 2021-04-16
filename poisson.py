@@ -1,16 +1,18 @@
-from Parameters import *
-from ModelData import *
-from dbTools import *
-from Model import *
-from View import *
+from DataTools.ModelData import *
+from DataTools.dbTools import *
+from Model.System import *
+from Model.Parameters import *
+from DataTools.View import *
 from numpy.random import rand
+from tqdm import tqdm
 import csv
 
 
-def laci_poisson (TMG=5) -> None:
+
+def laci_poisson (TMG=5, Cells=cells) -> None:
     with open(file, mode='a', newline='') as f:
         writer = csv.DictWriter(f, fieldnames= SCHEMA, delimiter='|')
-        for cell in range(cells): 
+        for cell in tqdm(range(Cells)): 
             state = STATE
             beta = beta_funct(tmg=TMG)
 
@@ -28,8 +30,8 @@ def laci_poisson (TMG=5) -> None:
             for step in range(steps):
 
                 time_p += dt
-                y += dy(r_y,y)
-                R_mono += dR_mono(R_mono)
+                y += dy(r_y,y, dt=dt)
+                R_mono += dR_mono(R_mono,dt=dt)
                 x = extmg(beta, y)
                 R_T = R_mono/100
                 R = R_(x,R_T)
@@ -66,17 +68,19 @@ def laci_poisson (TMG=5) -> None:
 
                 if y > -1:
 
-                    data = Data(time=round(time_p,4), 
-                                cell=round(cell,4), 
-                                beta=round(beta,4), 
-                                Extracellular_TMG= TMG,
-                                LacI_Tetramer=round(R_T,4),
-                                Active_LacI=round(R,4), 
-                                Permease=round(y,4), 
-                                mRNA=round(r_y,4), 
-                                LacI_monomer=round(R_mono,4),
+                    data = Data(
+                                time = round(time_p,4), 
+                                cell = round(cell,4), 
+                                beta = round(beta,4), 
+                                Extracellular_TMG = TMG,
+                                LacI_Tetramer = round(R_T,4),
+                                Active_LacI = round(R,4), 
+                                Permease = round(y,4), 
+                                mRNA = round(r_y,4), 
+                                LacI_monomer = round(R_mono,4),
                                 Intracellular_TMG = round(x,4),
-                                Promoter_State=promoter)
+                                Promoter_State = promoter
+                                )
                     model = data.data_model()
                     writer.writerow(model)
                     data = None
@@ -85,11 +89,20 @@ def laci_poisson (TMG=5) -> None:
 if __name__ == '__main__':
 
     if algorithm == 'poisson':
-        for concentration in range(tmg_range):
-            file = f'../simulation_data/poisson/cells_{cells}_tmg_{tmg}_state_{STATE}_poisson.csv'
+
+        file = f'./simulation_data/poisson/cells_{cells}_tmg_{tmg}_state_{STATE}_poisson.csv'
+        Tools(file=file).delete()
+        Tools(name=file, schema=SCHEMA).create()
+        p_sim = laci_poisson(TMG=tmg, Cells=cells)
+        main_view()
+
+    elif algorithm == 'poisson_delta_tmg':
+
+        for tmg_concentration in tqdm(range(tmg_range)):
+            file = f'./simulation_data/poisson_delta_tmg/cells_{cells}_tmg_{tmg}_state_{STATE}_poisson_delta_tmg.csv'
             Tools(file=file).delete()
             Tools(name=file, schema=SCHEMA).create()
-            p_sim = laci_poisson(TMG=tmg)
+            p_sim = laci_poisson(TMG=tmg, Cells=cells)
             main_view()
 
         

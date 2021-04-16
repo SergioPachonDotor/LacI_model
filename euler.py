@@ -3,16 +3,17 @@ from DataTools.dbTools import *
 from Model.System import *
 from Model.Parameters import *
 from DataTools.View import *
+from tqdm import tqdm
 import csv
 
 init_state = STATE
 
-def euler(TMG):
+def euler(TMG, Cells):
     
     with open(file, mode='a', newline='') as f:
         writer = csv.DictWriter(f, fieldnames= SCHEMA, delimiter='|')
 
-        for cell in range(cells):
+        for cell in range(Cells):
             beta = beta_funct(tmg=TMG)
             time_ = 0
 
@@ -32,8 +33,8 @@ def euler(TMG):
 
                 time_ += dt
                 counter += dt
-                y += dy(r_y, y)
-                r_y += dr_y_euler(R,r_y)
+                y += dy(r_y, y, dt=dt)
+                r_y += dr_y_euler(R,r_y,dt=dt)
                 R_mono = dR_mono_euler()
                 x = extmg(beta,y)
                 R_T = R_mono/100
@@ -61,5 +62,6 @@ if __name__ == '__main__':
     file = f'./simulation_data/euler/deterministic_steady_state_euler_{init_state}.csv'
     Tools(file=file).delete()
     Tools(name=file, schema=SCHEMA).create()
-    for tmg in range(120):
-        euler(TMG=tmg/2)
+    for tmg in tqdm(range(120)):
+        euler(TMG=tmg/2, Cells=cells)
+    main_view()
