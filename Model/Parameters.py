@@ -9,12 +9,12 @@ steps = int(tmax/dt)
 cells = 1
 
 #_____TMG_____
-tmg = 20
-tmg_range = 40
+tmg = 40
+tmg_range = 80
 
 #_____STATE_____
 # Choose Algorithm Initial State
-STATE = 'off'
+STATE = 'on'
 P_on = 1
 P_off = 0
 

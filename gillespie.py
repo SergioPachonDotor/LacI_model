@@ -138,26 +138,43 @@ def gillespie_full_noise(TMG,Cells):
                 y = 0
                 r_y = 0
                 dna = 0
+                promoter = 'off'
 
             elif init_state == 'on':
                 y = 1000
                 r_y = 10
                 dna = 1
+                promoter = 'on'
 
-            R_mono = 1
+            R_mono = 0
             R = 0.04
-            R_T = R_mono/100
+            R_T = 0
             dna = 1
 
             tautime = 0
             reference_time = 0
 
-            a_j = [0 for i in range(2)]
+            a_j = [0 for i in range(6)]
 
             while tautime < tmax:
 
-                a_j[0] = k_r * dna                  # Transcription  
-                a_j[1] = gamma_r * r_y              # mRNA Degradation
+                if R_T != 0:
+
+                    a_j[0] = k_r * dna                  # Transcription  
+                    a_j[1] = gamma_r * r_y              # mRNA Degradation
+                    a_j[2] = alpha * k_p * r_y          # Protein Synthesis
+                    a_j[3] = gamma * y                  # Protein Degradation
+                    a_j[4] = landa * (R/R_T) 
+                    a_j[5] = landa * (R_0/R_T)
+                
+                elif R_T == 0:
+
+                    a_j[0] = k_r * dna                  # Transcription  
+                    a_j[1] = gamma_r * r_y              # mRNA Degradation
+                    a_j[2] = alpha * k_p * r_y          # Protein Synthesis
+                    a_j[3] = gamma * y                  # Protein Degradation
+                    a_j[4] = 0
+                    a_j[5] = 0
                 
                 a_total = np.sum(a_j)
 
@@ -169,7 +186,7 @@ def gillespie_full_noise(TMG,Cells):
 
                 if tautime + tau > reference_time: 
                     tau = reference_time - tautime
-                    y += dy(r_y, y, dt=tau)
+
                     R_mono += dR_mono(R_mono, dt=tau)
                     x = extmg(beta,y)
                     R_T = R_mono/100
@@ -187,7 +204,7 @@ def gillespie_full_noise(TMG,Cells):
                             mRNA = round(r_y,4), 
                             LacI_monomer = round(R_mono,4),
                             Intracellular_TMG = round(x,4),
-                            Promoter_State = None,
+                            Promoter_State = dna,
                             On_Time = on_time,
                             Off_Time = off_time
                             )
@@ -199,7 +216,7 @@ def gillespie_full_noise(TMG,Cells):
                     reference_time += sampling_time
                 
                 else:
-                    y += dy(r_y, y, dt=tau)
+
                     R_mono += dR_mono(R_mono, dt=tau)
                     x = extmg(beta,y)
                     R_T = R_mono/100
@@ -217,6 +234,27 @@ def gillespie_full_noise(TMG,Cells):
                         # mRNA degradation
                         r_y -= 1
 
+                    elif q == 3:
+                        y += 1
+                    
+                    elif q == 4:
+                        y -= 1
+                    
+                    elif q == 5:
+                        if dna > 0:
+                            dna -= 1
+                        elif dna <= 0:
+                            dna = 0
+                        promoter = 'off'
+
+                    elif q == 6:
+                        if dna == 0:
+                            dna += 1
+                            
+                        elif dna > 0:
+                            dna = 1
+                        promoter == 'on'
+
                     tautime += tau
 
                 if init_state == 'off':
@@ -228,8 +266,6 @@ def gillespie_full_noise(TMG,Cells):
                     if y < 500 and off_counter == 0:
                         off_time = round(tautime,4)
                         off_counter = 1
-
-
     f.close()
 
 
