@@ -17,7 +17,7 @@ def laci_poisson (TMG=5, Cells=cells) -> None:
             beta = beta_funct(tmg=TMG)
 
             if state == 'on':
-                y = 10000
+                y = 1000
                 r_y = 10
             elif state == 'off':
                 y = 0
