@@ -1,4 +1,5 @@
 *.jpg
 *.csv
 *.svg
+*.pdf
 __pycache__

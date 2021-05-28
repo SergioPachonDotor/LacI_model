@@ -6,11 +6,11 @@ dt = 0.1
 steps = int(tmax/dt)
 
 #_____Cell_Number_____
-cells = 10000
+cells = 1
 
 #_____TMG_____
 tmg = 20
-tmg_range = 10
+tmg_range = 9
 
 #_____STATE_____
 # Choose Algorithm Initial State
@@ -22,9 +22,9 @@ P_off = 0
 #   You can choose between: 
 #     - Euler: euler
 #     - Poisson: poisson, poisson_delta_tmg
-#     - Gillespie: gillespie, gillespie_full_noise, gillespie_delta_tmg,gillespie_on_off
+#     - Gillespie: gillespie, gillespie_full_noise, gillespie_delta_tmg, gillespie_on_off, gillespie_on_off_double
 
-algorithm = 'gillespie_delta_tmg'
+algorithm = 'gillespie_full_noise'
 
 #_____Parameters_____
 gamma = 0.0231

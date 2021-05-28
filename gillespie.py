@@ -273,6 +273,7 @@ def gillespie_full_noise(TMG,Cells):
 def gillespie_delta_tmg(TMG,Cells):
     
     with open(file, mode='a', newline='') as f:
+
         writer = csv.DictWriter(f, fieldnames= SCHEMA, delimiter='|')
         
         for cell in tqdm(range(Cells)):
@@ -412,8 +413,8 @@ def gillespie_delta_tmg(TMG,Cells):
     f.close()
 
 
-def gillespie_on_off(TMG,Cells):
-    
+def gillespie_on_off(TMG,Cells, mode='single_switch'):
+
     with open(file, mode='a', newline='') as f:
         writer = csv.DictWriter(f, fieldnames= SCHEMA, delimiter='|')
         
@@ -425,9 +426,9 @@ def gillespie_on_off(TMG,Cells):
             on_time = 0
             off_counter = 0
             off_time = 0
+            for_dswitch = init_state
             flag = True
             
-
             if init_state == 'off':
                 y = 0
                 r_y = 0
@@ -450,7 +451,6 @@ def gillespie_on_off(TMG,Cells):
             a_j = [0 for i in range(4)]
 
             while flag:
-
                 if R_T != 0:
                     a_j[0] = k_r * dna                  # Transcription  
                     a_j[1] = gamma_r * r_y              # mRNA Degradation
@@ -470,8 +470,8 @@ def gillespie_on_off(TMG,Cells):
                 dart = a_total * rand()
                 sum_a = 0
                 q = 0
-                                 
-                y += dy(r_y, y, dt=tau)
+
+                y = dy_tau(r_y, y, tau)
                 R_mono += dR_mono(R_mono, dt=tau)
                 x = extmg(beta,y)
                 R_T = R_mono/100
@@ -507,33 +507,92 @@ def gillespie_on_off(TMG,Cells):
 
                 tautime += tau
 
-                if init_state == 'off':
+                if mode == 'single_switch':
+                    if init_state == 'off':
 
-                    if TMG == 0:
-                        break
+                        if TMG == 0:
+                            break
 
-                    if y >= 250 and on_counter == 0:
+                        if y >= 250 and on_counter == 0:
 
-                        on_time = round(tautime,4)
-                        data = Data(cell = cell,On_Time = on_time)                               
-                        model = data.data_model()
-                        writer.writerow(model)
-                        data = None
-                        on_counter = 1
+                            on_time = round(tautime,4)
+                            data = Data(cell = cell,On_Time = on_time)                               
+                            model = data.data_model()
+                            writer.writerow(model)
+                            data = None
+                            on_counter = 1
+                            flag = False
+
+                    if init_state == 'on':
+
+                        if y < 250 and off_counter == 0:
+
+                            off_time = round(tautime,4)
+                            data = Data(cell = cell,Off_Time = off_time)                               
+                            model = data.data_model()
+                            writer.writerow(model)
+                            data = None
+                            off_counter = 1
+                            flag = False
+                        
+                elif mode == 'double_switch':
+
+                    if for_dswitch == 'off':
+
+                        if TMG < 5:
+                            break
+
+                        if y > 250 and on_counter == 0:
+
+                            on_time = round(tautime,4)
+                            data = Data( 
+                                    cell = round(cell,4), 
+                                    beta = round(beta,4), 
+                                    Extracellular_TMG= TMG,
+                                    LacI_Tetramer = round(R_T,4),
+                                    Active_LacI = round(R,4), 
+                                    Permease = round(y,4), 
+                                    mRNA = round(r_y,4), 
+                                    LacI_monomer = round(R_mono,4),
+                                    Intracellular_TMG = round(x,4),
+                                    Promoter_State = dna,
+                                    On_Time = on_time,
+                                    )                            
+                            model = data.data_model()
+                            writer.writerow(model)
+
+                            data = None
+                            on_counter = 1
+                            for_dswitch = 'on'
+
+                    if for_dswitch == 'on':
+
+                        if y < 250 and off_counter == 0:
+
+                            off_time = round(tautime,4)
+                            data = Data( 
+                                    cell = round(cell,4), 
+                                    beta = round(beta,4), 
+                                    Extracellular_TMG= TMG,
+                                    LacI_Tetramer = round(R_T,4),
+                                    Active_LacI = round(R,4), 
+                                    Permease = round(y,4), 
+                                    mRNA = round(r_y,4), 
+                                    LacI_monomer = round(R_mono,4),
+                                    Intracellular_TMG = round(x,4),
+                                    Promoter_State = dna,
+                                    Off_Time = off_time
+                                    )                               
+                            model = data.data_model()
+                            writer.writerow(model)
+
+                            data = None
+                            off_counter = 1
+                            for_dswitch = 'off'
+                        
+                    if on_counter == 1 and off_counter == 1:
                         flag = False
-
-                if init_state == 'on':
-
-                    if y < 250 and off_counter == 0:
-
-                        off_time = round(tautime,4)
-                        data = Data(cell = cell,Off_Time = off_time)                               
-                        model = data.data_model()
-                        writer.writerow(model)
-                        data = None
-                        off_counter = 1
-                        flag = False
-    
+ 
     f.close()
 
 
@@ -567,14 +626,28 @@ if __name__ == '__main__':
         main_view()
 
     elif algorithm == 'gillespie_on_off':
-
+        factor = 5
         for tmg_concentration in tqdm(range(1)):
 
-            file = f'./simulation_data/gillespie_on_off/gillespie_on_off_state_{init_state}_tmg_{40}_cells_{cells}.csv'
+            file = f'./simulation_data/gillespie_on_off/gillespie_on_off_state_{init_state}_tmg_{tmg_concentration * factor}_cells_{cells}.csv'
             
             Tools(file=file).delete()
             Tools(name=file, schema=SCHEMA).create()
 
-            gillespie_on_off(TMG=40,Cells=cells)
+            gillespie_on_off(TMG=tmg_concentration * factor, Cells=cells, mode='single_switch')
+
+        main_view()
+
+    elif algorithm == 'gillespie_on_off_double':
+
+        factor = 5
+
+        for tmg_concentration in tqdm(range(1,tmg_range)):
+            file = f'./simulation_data/gillespie_on_off_double/gillespie_on_off_double_state_{init_state}_tmg_{tmg_concentration * factor}_cells_{cells}.csv'
+            
+            Tools(file=file).delete()
+            Tools(name=file, schema=SCHEMA).create()
+
+            gillespie_on_off(TMG=tmg_concentration * factor, Cells=cells, mode='double_switch')
 
         main_view()
