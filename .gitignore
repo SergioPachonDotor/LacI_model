@@ -2,4 +2,6 @@
 *.csv
 *.svg
 *.pdf
+
+.vscode
 __pycache__
