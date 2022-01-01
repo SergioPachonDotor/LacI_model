@@ -1,22 +1,54 @@
 #_____SCHEMA_____
 
-SCHEMA = [
-            'Time',
-            'Cell',
-            'beta',
-            'Intracellular_TMG',
-            'Permease',
-            'mRNA',
-            'LacI_monomer',
-            'LacI_tetramer',
-            'Active_LacI',
-            'Extracellular_TMG',
-            'Promoter_State',
-            'On_Time',
-            'Off_Time'
-         ]
+class Schema:
 
-class Data:
+    def __init__(self) -> None:
+
+        self.classic:list[str] = [
+                        'Time',
+                        'Cell',
+                        'beta',
+                        'Intracellular_TMG',
+                        'Permease',
+                        'mRNA',
+                        'LacI_monomer',
+                        'LacI_tetramer',
+                        'Active_LacI',
+                        'Extracellular_TMG',
+                        'Promoter_State',
+                        'On_Time',
+                        'Off_Time'
+                    ]
+
+        self.division: list[str] = [
+                            'Time',
+                            'Cell',
+                            'Size',
+                            'beta',
+                            'Intracellular_TMG',
+                            'Permease',
+                            'mRNA',
+                            'LacI_monomer',
+                            'LacI_tetramer',
+                            'Active_LacI',
+                            'Extracellular_TMG',
+                            'Promoter_State',
+                            'On_Time',
+                            'Off_Time'
+                        ]
+
+        self.new_schema: list[str] = []
+
+    def get_classic_schema(self):
+        return self.classic
+
+    def get_division_schema(self):
+        return self.division
+
+    def set_new_schema(self, new_schema: list[str]):
+        self.new_schema = new_schema
+
+class Data(Schema):
     
     def __init__(self, 
                  time=None, 
@@ -31,9 +63,11 @@ class Data:
                  Intracellular_TMG = None,
                  Promoter_State=None,
                  On_Time=None,
-                 Off_Time=None
+                 Off_Time=None,
+                 size=None
                  ):
 
+        super().__init__()
         #Time (dt)| Sample (trayectory id) | Variables
         self.time = time
         self.cell = cell
@@ -48,21 +82,42 @@ class Data:
         self.promoter = Promoter_State
         self.On_Time = On_Time
         self.Off_Time = Off_Time
+        self.size = size
 
     def data_model(self):
         model = {
-                 SCHEMA[0]:f'{self.time}', 
-                 SCHEMA[1]:f'{self.cell}', 
-                 SCHEMA[2]:f'{self.beta}', 
-                 SCHEMA[3]:f'{self.x}',
-                 SCHEMA[4]:f'{self.y}',
-                 SCHEMA[5]:f'{self.r_y}',
-                 SCHEMA[6]:f'{self.R_mono}',
-                 SCHEMA[7]:f'{self.R_T}',
-                 SCHEMA[8]:f'{self.R}',
-                 SCHEMA[9]:f'{self.T}',
-                 SCHEMA[10]:f'{self.promoter}',
-                 SCHEMA[11]:f'{self.On_Time}',
-                 SCHEMA[12]:f'{self.Off_Time}'
+                 self.classic[0]:f'{self.time}', 
+                 self.classic[1]:f'{self.cell}', 
+                 self.classic[2]:f'{self.beta}', 
+                 self.classic[3]:f'{self.x}',
+                 self.classic[4]:f'{self.y}',
+                 self.classic[5]:f'{self.r_y}',
+                 self.classic[6]:f'{self.R_mono}',
+                 self.classic[7]:f'{self.R_T}',
+                 self.classic[8]:f'{self.R}',
+                 self.classic[9]:f'{self.T}',
+                 self.classic[10]:f'{self.promoter}',
+                 self.classic[11]:f'{self.On_Time}',
+                 self.classic[12]:f'{self.Off_Time}'
                 }
+        return model
+
+    def data_division_model(self):
+        model = {
+                self.division[0]:f'{self.time}', 
+                self.division[1]:f'{self.cell}', 
+                self.division[2]:f'{self.size}',
+                self.division[3]:f'{self.beta}',
+                self.division[4]:f'{self.x}',
+                self.division[5]:f'{self.y}',
+                self.division[6]:f'{self.r_y}',
+                self.division[7]:f'{self.R_mono}',
+                self.division[8]:f'{self.R_T}',
+                self.division[9]:f'{self.R}',
+                self.division[10]:f'{self.T}',
+                self.division[11]:f'{self.promoter}',
+                self.division[12]:f'{self.On_Time}',
+                self.division[13]:f'{self.Off_Time}'
+        }
+
         return model

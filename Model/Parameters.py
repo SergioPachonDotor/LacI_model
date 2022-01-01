@@ -1,15 +1,15 @@
 import numpy as np
 
 #_____Time_____
-tmax = 1440 #minutes
+tmax = 75 #minutes
 dt = 0.1
 steps = int(tmax/dt)
 
 #_____Cell_Number_____
-cells = 1
+cells = 1000
 
 #_____TMG_____
-tmg = 20
+tmg = 10
 tmg_range = 9
 
 #_____STATE_____
@@ -22,9 +22,9 @@ P_off = 0
 #   You can choose between: 
 #     - Euler: euler
 #     - Poisson: poisson, poisson_delta_tmg
-#     - Gillespie: gillespie, gillespie_full_noise, gillespie_delta_tmg, gillespie_on_off, gillespie_on_off_double
+#     - Gillespie: gillespie, gillespie_full_noise, gillespie_delta_tmg, gillespie_on_off, gillespie_on_off_double, simulate_adder
 
-algorithm = 'gillespie_full_noise'
+algorithm = 'simulate_adder'
 
 #_____Parameters_____
 gamma = 0.0231
@@ -42,6 +42,6 @@ landa = 1.5
 
 #_____Extra_____
 
-sampling_time = 1
+sampling_time = 0.1
 c_assoc = 0.00001               # Association Constant. 0.00001 Associations/s
 c_diss = 0.005                   # Complex Degradation Constant 0.005/s
