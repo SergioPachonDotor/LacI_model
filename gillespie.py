@@ -1,6 +1,6 @@
-from DataTools.ModelData import Data as data
-from DataTools.ModelData import Schema as schema
-from DataTools.dbTools import *
+from DataTools.ModelData import Data
+from DataTools.ModelData import Schema
+from DataTools.dbTools import Tools
 from Model.System import System as sys
 from Model.Parameters import *
 from DataTools.View import *
@@ -13,12 +13,12 @@ import csv
 
 
 init_state = STATE
-SCHEMA = schema.get_classic_schema()
+SCHEMA = Schema.get_classic_schema()
 SCHEMA_DIV = Schema.get_division_schema()
 
 def gillespie(TMG,Cells):
     
-    SCHEMA = schema.get_classic_schema()
+    SCHEMA = Schema.get_classic_schema()
 
     with open(file, mode='a', newline='') as f:
         writer = csv.DictWriter(f, fieldnames= SCHEMA, delimiter='|')

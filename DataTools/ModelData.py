@@ -17,7 +17,8 @@ class Schema:
                         'Extracellular_TMG',
                         'Promoter_State',
                         'On_Time',
-                        'Off_Time'
+                        'Off_Time',
+                        'Initial_State'
                     ]
 
         self.division: list[str] = [
@@ -34,8 +35,24 @@ class Schema:
                             'Extracellular_TMG',
                             'Promoter_State',
                             'On_Time',
-                            'Off_Time'
+                            'Off_Time',
+                            'Initial_State'
                         ]
+
+        self.classic_time_distribution: list[str] = [
+            'Cell',
+            'On_Time',
+            'Off_Time',
+            'Promoter_State'
+        ]
+
+        self.classic_time_distribution_division: list[str] = [
+            'Cell',
+            'Size',
+            'On_Time',
+            'Off_Time',
+            'Promoter_State'
+        ]
 
         self.new_schema: list[str] = []
 
@@ -44,6 +61,12 @@ class Schema:
 
     def get_division_schema(self):
         return self.division
+    
+    def get_classic_time_distribution_schema(self):
+        return self.classic_time_distribution
+
+    def get_time_distribution_division_schema(self):
+        return self.classic_time_distribution_division
 
     def set_new_schema(self, new_schema: list[str]):
         self.new_schema = new_schema
@@ -64,7 +87,8 @@ class Data(Schema):
                  Promoter_State=None,
                  On_Time=None,
                  Off_Time=None,
-                 size=None
+                 size=None,
+                 initial_state=None,
                  ):
 
         super().__init__()
@@ -83,6 +107,7 @@ class Data(Schema):
         self.On_Time = On_Time
         self.Off_Time = Off_Time
         self.size = size
+        self.initial_state = initial_state
 
     def data_model(self):
         model = {
@@ -98,7 +123,8 @@ class Data(Schema):
                  self.classic[9]:f'{self.T}',
                  self.classic[10]:f'{self.promoter}',
                  self.classic[11]:f'{self.On_Time}',
-                 self.classic[12]:f'{self.Off_Time}'
+                 self.classic[12]:f'{self.Off_Time}',
+                 self.classic[13]:f'{self.initial_state}'
                 }
         return model
 
@@ -117,7 +143,27 @@ class Data(Schema):
                 self.division[10]:f'{self.T}',
                 self.division[11]:f'{self.promoter}',
                 self.division[12]:f'{self.On_Time}',
-                self.division[13]:f'{self.Off_Time}'
+                self.division[13]:f'{self.Off_Time}',
+                self.division[14]:f'{self.initial_state}'
         }
 
+        return model
+
+    def data_time_distribution_model(self):
+        model = {
+                self.classic_time_distribution[0]:f'{self.cell}',
+                self.classic_time_distribution[1]:f'{self.On_Time}',
+                self.classic_time_distribution[2]:f'{self.Off_Time}',
+                self.classic_time_distribution[3]:f'{self.promoter}'
+        }
+        return model
+
+    def data_time_distribution_division_model(self):
+        model = {
+                self.classic_time_distribution_division[0]:f'{self.cell}',
+                self.classic_time_distribution_division[1]:f'{self.size}',
+                self.classic_time_distribution_division[2]:f'{self.On_Time}',
+                self.classic_time_distribution_division[3]:f'{self.Off_Time}',
+                self.classic_time_distribution_division[4]:f'{self.promoter}'
+        }
         return model
