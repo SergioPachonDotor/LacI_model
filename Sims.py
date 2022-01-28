@@ -168,7 +168,10 @@ class Simulation:
                         elif model is not None:
                             writer.writerow(model)
 
-                        if system.on_counter == 1 and system.off_counter == 1:
+                        if system.on_counter == 1 and system.off_counter == 1:                            
+                            system.on_counter = 0
+                            system.off_counter = 0
+                            system.promoter = self.state
                             flag = False
 
     def get_time_division_distribution(self, mode='single'):

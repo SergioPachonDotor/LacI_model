@@ -237,35 +237,37 @@ class System(Parameters):
             print(f'Unable to simulate\nTMG: {tmg}')
             exit()
 
-        if self.permease >= 100 and self.on_counter == 0:
+        if self.promoter == 'on' and self.off_counter == 0:
+            if self.permease < 250:
 
-            self.on_time = round(tautime,4)
-            data = Data(
-                        cell = cell,
-                        On_Time = self.on_time,
-                        Off_Time= self.off_time,
-                        Promoter_State= self.promoter
-                        )  
-            model = data.data_time_distribution_model()
+                self.off_time = round(tautime,4)
+                data = Data(
+                            cell = cell,
+                            On_Time = self.on_time,
+                            Off_Time= self.off_time,
+                            Promoter_State= self.promoter
+                            )  
+                model = data.data_time_distribution_model()
 
-            self.on_counter = 1
-            self.promoter = 'on'
-            return model
+                self.off_counter = 1
+                self.promoter = 'off'
+                return model
 
-        if self.permease < 100 and self.off_counter == 0:
+        if self.promoter == 'off' and self.on_counter == 0:
+            if self.permease > 250:
 
-            self.off_time = round(tautime,4)
-            data = Data(
-                        cell = cell,
-                        On_Time = self.on_time,
-                        Off_Time= self.off_time,
-                        Promoter_State= self.promoter
-                        )  
-            model = data.data_time_distribution_model()
+                self.on_time = round(tautime,4)
+                data = Data(
+                            cell = cell,
+                            On_Time = self.on_time,
+                            Off_Time= self.off_time,
+                            Promoter_State= self.promoter
+                            )  
+                model = data.data_time_distribution_model()
 
-            self.off_counter = 1
-            self.promoter = 'off'
-            return model
+                self.on_counter = 1
+                self.promoter = 'on'
+                return model
 
 
 class DivisionSystem(System, Parameters):
